@@ -1,0 +1,58 @@
+const galleryItems = document.querySelectorAll(".gallery-item");
+const lightbox = document.getElementById("lightbox");
+const lightboxImg = document.getElementById("lightbox-img");
+const closeBtn = document.querySelector(".close");
+const nextBtn = document.querySelector(".next");
+const prevBtn = document.querySelector(".prev");
+const filterButtons = document.querySelectorAll(".filter-buttons button");
+
+let currentIndex = 0;
+let images = [];
+
+// Collect all image sources
+galleryItems.forEach((item, index) => {
+    images.push(item.querySelector("img").src);
+    item.addEventListener("click", () => {
+        currentIndex = index;
+        openLightbox(images[currentIndex]);
+    });
+});
+
+// Lightbox functions
+function openLightbox(src) {
+    lightbox.style.display = "block";
+    lightboxImg.src = src;
+}
+
+function closeLightbox() {
+    lightbox.style.display = "none";
+}
+
+closeBtn.addEventListener("click", closeLightbox);
+
+nextBtn.addEventListener("click", () => {
+    currentIndex = (currentIndex + 1) % images.length;
+    lightboxImg.src = images[currentIndex];
+});
+
+prevBtn.addEventListener("click", () => {
+    currentIndex = (currentIndex - 1 + images.length) % images.length;
+    lightboxImg.src = images[currentIndex];
+});
+
+window.addEventListener("click", (e) => {
+    if (e.target === lightbox) closeLightbox();
+});
+
+// Filter functionality
+filterButtons.forEach(button => {
+    button.addEventListener("click", () => {
+        filterButtons.forEach(btn => btn.classList.remove("active"));
+        button.classList.add("active");
+
+        const filter = button.getAttribute("data-filter");
+        galleryItems.forEach(item => {
+            item.style.display = (filter === "all" || item.getAttribute("data-category") === filter) ? "block" : "none";
+        });
+    });
+});
